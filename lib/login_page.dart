@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // 🔹 Import do Firebase
 import 'create_account_page.dart';
+import 'home_page.dart'; // 🔹 Para redirecionar após login
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,6 +14,48 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _isLoading = false;
+
+  // 🔐 Função para login
+  Future<void> _login() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Preencha todos os campos')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Login bem-sucedido → vá para HomePage
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => HomePage()),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      String message = 'Erro ao fazer login.';
+      if (e.code == 'user-not-found') {
+        message = 'Usuário não encontrado.';
+      } else if (e.code == 'wrong-password') {
+        message = 'Senha incorreta.';
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,14 +65,9 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: Colors.blue.shade700,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context); 
-          },
+          onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Login no Mobus',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Login no Mobus', style: TextStyle(color: Colors.white)),
         centerTitle: true,
       ),
       body: Center(
@@ -37,11 +76,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
-                Icons.directions_bus,
-                size: 100,
-                color: Colors.white,
-              ),
+              const Icon(Icons.directions_bus, size: 100, color: Colors.white),
               const SizedBox(height: 20),
 
               // Campo de E-mail
@@ -93,14 +128,11 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 30),
 
+              // Botão de login
               MouseRegion(
-                cursor: SystemMouseCursors.click, 
+                cursor: SystemMouseCursors.click,
                 child: ElevatedButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Login pressionado!')),
-                    );
-                  },
+                  onPressed: _isLoading ? null : _login,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     foregroundColor: Colors.blue.shade700,
@@ -109,22 +141,27 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'Login',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text(
+                          'Login',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
                 ),
               ),
               const SizedBox(height: 20),
+
+              // Link para criar conta
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    "Não tem uma conta? ",
-                    style: TextStyle(color: Colors.white70),
-                  ),
+                  const Text("Não tem uma conta? ", style: TextStyle(color: Colors.white70)),
                   MouseRegion(
-                    cursor: SystemMouseCursors.click, 
+                    cursor: SystemMouseCursors.click,
                     child: GestureDetector(
                       onTap: () {
                         Navigator.push(
