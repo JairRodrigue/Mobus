@@ -1,26 +1,9 @@
 import 'package:flutter/material.dart';
-import 'who_is_using.dart'; // 👉 importa a nova página
+import 'home_page.dart';
 
-void main() {
-  runApp(MobusApp());
-}
+class BusChoicePage extends StatelessWidget {
+  const BusChoicePage({super.key});
 
-class MobusApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Mobus',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        scaffoldBackgroundColor: Colors.white,
-      ),
-      home: StartPage(),
-    );
-  }
-}
-
-class StartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,26 +21,24 @@ class StartPage extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Logo/ícone
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   shape: BoxShape.circle,
                 ),
-                padding: EdgeInsets.all(20),
-                child: Icon(
+                padding: const EdgeInsets.all(20),
+                child: const Icon(
                   Icons.directions_bus,
                   size: 120,
                   color: Colors.white,
                 ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
 
-              // Texto de boas-vindas
-              Text(
-                'Bem-vindo ao Mobus!',
+              const Text(
+                'Qual ônibus você pega?',
                 style: TextStyle(
-                  fontSize: 32,
+                  fontSize: 28,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                   shadows: [
@@ -70,31 +51,23 @@ class StartPage extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 40),
 
-              Text(
-                'Acompanhe o transporte em tempo real',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white70,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 40),
-
-              // Botão principal
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => WhoIsUsingPage()), // 👉 agora abre a nova tela
+                    MaterialPageRoute(builder: (context) => HomePage()), 
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Você escolheu Ônibus Cohab')),
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 18),
+                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 18),
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.blue.shade700,
-                  textStyle: TextStyle(
+                  textStyle: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -102,7 +75,33 @@ class StartPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: Text('Começar'),
+                child: const Text('Ônibus Cohab'),
+              ),
+              const SizedBox(height: 20),
+
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage()), 
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Você escolheu Ônibus Santo Antônio')),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 18),
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.blue.shade700,
+                  textStyle: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text('Ônibus Santo Antônio'),
               ),
             ],
           ),
