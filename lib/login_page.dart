@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'create_account_page.dart';
+import "bus_choice_driver.dart";
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -22,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context); 
+            Navigator.pop(context);
           },
     ***REMOVED***
         title: const Text(
@@ -44,7 +44,6 @@ class _LoginPageState extends State<LoginPage> {
           ***REMOVED***
               const SizedBox(height: 20),
 
-              // Campo de E-mail
               TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -63,7 +62,6 @@ class _LoginPageState extends State<LoginPage> {
           ***REMOVED***
               const SizedBox(height: 20),
 
-              // Campo de Senha
               TextField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
@@ -94,12 +92,13 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 30),
 
               MouseRegion(
-                cursor: SystemMouseCursors.click, 
+                cursor: SystemMouseCursors.click,
                 child: ElevatedButton(
                   onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Login pressionado!')),
-                  ***REMOVED***
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => BusChoiceDriver()), 
+                ***REMOVED***
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
@@ -115,35 +114,7 @@ class _LoginPageState extends State<LoginPage> {
               ***REMOVED***
             ***REMOVED***
           ***REMOVED***
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Não tem uma conta? ",
-                    style: TextStyle(color: Colors.white70),
-              ***REMOVED***
-                  MouseRegion(
-                    cursor: SystemMouseCursors.click, 
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const CreateAccountPage()),
-                      ***REMOVED***
-                      },
-                      child: const Text(
-                        "Criar Conta",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
-                    ***REMOVED***
-                  ***REMOVED***
-                ***REMOVED***
-              ***REMOVED***
-                ],
-          ***REMOVED***
+
               const SizedBox(height: 40),
             ],
       ***REMOVED***
