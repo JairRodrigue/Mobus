@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // 🔹 Import do Firebase
-import 'create_account_page.dart';
-import 'home_page.dart'; // 🔹 Para redirecionar após login
+import "bus_choice_driver.dart";
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -16,7 +14,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
   bool _isLoading = false;
 
-  // 🔐 Função para login
+
   Future<void> _login() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
@@ -36,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
         password: password,
       );
 
-      // Login bem-sucedido → vá para HomePage
+     
       if (mounted) {
         Navigator.pushReplacement(
           context,
@@ -65,7 +63,13 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: Colors.blue.shade700,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: const Text(
+          'Login no Mobus',
+          style: TextStyle(color: Colors.white),
         ),
         title: const Text('Login no Mobus', style: TextStyle(color: Colors.white)),
         centerTitle: true,
@@ -79,7 +83,6 @@ class _LoginPageState extends State<LoginPage> {
               const Icon(Icons.directions_bus, size: 100, color: Colors.white),
               const SizedBox(height: 20),
 
-              // Campo de E-mail
               TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -98,7 +101,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 20),
 
-              // Campo de Senha
               TextField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
@@ -128,11 +130,15 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 30),
 
-              // Botão de login
               MouseRegion(
                 cursor: SystemMouseCursors.click,
                 child: ElevatedButton(
-                  onPressed: _isLoading ? null : _login,
+                  onPressed: () {
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => BusChoiceDriver()), 
+                  );
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     foregroundColor: Colors.blue.shade700,
@@ -153,34 +159,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                 ),
               ),
-              const SizedBox(height: 20),
 
-              // Link para criar conta
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("Não tem uma conta? ", style: TextStyle(color: Colors.white70)),
-                  MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const CreateAccountPage()),
-                        );
-                      },
-                      child: const Text(
-                        "Criar Conta",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
               const SizedBox(height: 40),
             ],
           ),
