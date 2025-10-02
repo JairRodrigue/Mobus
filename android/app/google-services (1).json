@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "852129377639",
+    "project_id": "mobus-ca8a4",
+    "storage_bucket": "mobus-ca8a4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:852129377639:android:bb5a24f5d49b0f41fb13c2",
+        "android_client_info": {
+          "package_name": "com.example.mobus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6Igqzy0XJsuESM2SiznXMMAbUtkOvS2Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

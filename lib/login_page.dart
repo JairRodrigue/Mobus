@@ -12,6 +12,48 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _isLoading = false;
+
+
+  Future<void> _login() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Preencha todos os campos')),
+    ***REMOVED***
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+    ***REMOVED***
+
+     
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => HomePage()),
+      ***REMOVED***
+      }
+    } on FirebaseAuthException catch (e) {
+      String message = 'Erro ao fazer login.';
+      if (e.code == 'user-not-found') {
+        message = 'Usuário não encontrado.';
+      } else if (e.code == 'wrong-password') {
+        message = 'Senha incorreta.';
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +71,7 @@ class _LoginPageState extends State<LoginPage> {
           'Login no Mobus',
           style: TextStyle(color: Colors.white),
     ***REMOVED***
+        title: const Text('Login no Mobus', style: TextStyle(color: Colors.white)),
         centerTitle: true,
   ***REMOVED***
       body: Center(
@@ -37,11 +80,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
-                Icons.directions_bus,
-                size: 100,
-                color: Colors.white,
-          ***REMOVED***
+              const Icon(Icons.directions_bus, size: 100, color: Colors.white),
               const SizedBox(height: 20),
 
               TextField(
@@ -108,10 +147,16 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(12),
                 ***REMOVED***
               ***REMOVED***
-                  child: const Text(
-                    'Login',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ***REMOVED***
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text(
+                          'Login',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ***REMOVED***
             ***REMOVED***
           ***REMOVED***
 

@@ -1,11 +1,28 @@
 import 'package:flutter/material.dart';
-import 'who_is_using.dart'; // 👉 importa a nova página
+import 'who_is_using.dart'; 
 
-void main() {
-  runApp(MobusApp());
+import 'login_page.dart';
+import 'home_page.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp( 
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+  runApp(const MobusApp());
 }
 
 class MobusApp extends StatelessWidget {
+  const MobusApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -21,6 +38,8 @@ class MobusApp extends StatelessWidget {
 }
 
 class StartPage extends StatelessWidget {
+  const StartPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,23 +57,23 @@ class StartPage extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Logo/ícone
+
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   shape: BoxShape.circle,
             ***REMOVED***
-                padding: EdgeInsets.all(20),
-                child: Icon(
+                padding: const EdgeInsets.all(20),
+                child: const Icon(
                   Icons.directions_bus,
                   size: 120,
                   color: Colors.white,
             ***REMOVED***
           ***REMOVED***
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
 
-              // Texto de boas-vindas
-              Text(
+             
+              const Text(
                 'Bem-vindo ao Mobus!',
                 style: TextStyle(
                   fontSize: 32,
@@ -70,9 +89,9 @@ class StartPage extends StatelessWidget {
             ***REMOVED***
                 textAlign: TextAlign.center,
           ***REMOVED***
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-              Text(
+              const Text(
                 'Acompanhe o transporte em tempo real',
                 style: TextStyle(
                   fontSize: 18,
@@ -80,21 +99,21 @@ class StartPage extends StatelessWidget {
             ***REMOVED***
                 textAlign: TextAlign.center,
           ***REMOVED***
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
 
-              // Botão principal
+             
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => WhoIsUsingPage()), // 👉 agora abre a nova tela
+                    MaterialPageRoute(builder: (context) => WhoIsUsingPage()), 
                 ***REMOVED***
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 18),
+                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 18),
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.blue.shade700,
-                  textStyle: TextStyle(
+                  textStyle: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
               ***REMOVED***
@@ -102,7 +121,7 @@ class StartPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
               ***REMOVED***
             ***REMOVED***
-                child: Text('Começar'),
+                child: const Text('Começar'),
           ***REMOVED***
             ],
       ***REMOVED***
