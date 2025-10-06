@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
-import 'who_is_using.dart'; 
+import 'package:flutter_dotenv/flutter_dotenv.dart'; 
+import 'package:firebase_core/firebase_core.dart';
 
+import 'who_is_using.dart';
 import 'login_page.dart';
 import 'home_page.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp( 
-   options: const FirebaseOptions(
-    apiKey: "AIzaSyAbuVHYRRGTDlmwBq0nfCELDoK2TIqLUrM",
-    authDomain: "mobus-ca8a4.firebaseapp.com",
-    projectId: "mobus-ca8a4",
-    storageBucket: "mobus-ca8a4.firebasestorage.app",
-    messagingSenderId: "852129377639",
-    appId: "1:852129377639:web:71c41cd742c71da2fb13c2",
-    measurementId: "G-7VG2N4HCLM"
-    ),
-  );
+  
+  // Carregar variáveis do .env
+  await dotenv.load(fileName: ".env");
+
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+      apiKey: dotenv.env['API_KEY']!,
+      authDomain: dotenv.env['AUTH_DOMAIN'],
+      projectId: dotenv.env['PROJECT_ID']!,
+      storageBucket: dotenv.env['STORAGE_BUCKET'],
+      messagingSenderId: dotenv.env['MESSAGING_SENDER_ID']!,
+      appId: dotenv.env['APP_ID']!,
+      measurementId: dotenv.env['MEASUREMENT_ID'],),);
+
   runApp(const MobusApp());
 }
 
