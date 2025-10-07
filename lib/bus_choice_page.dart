@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'home_page.dart';
+import 'location_page_cohab.dart';
+import 'location_page_santo_antonio.dart';
 
 class BusChoicePage extends StatelessWidget {
   const BusChoicePage({super.key});
@@ -57,7 +58,7 @@ class BusChoicePage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => HomePage()), 
+                    MaterialPageRoute(builder: (context) => LocationPageCohab()), 
                   );
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Você escolheu Ônibus Cohab')),
@@ -83,7 +84,7 @@ class BusChoicePage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => HomePage()), 
+                    MaterialPageRoute(builder: (context) => LocationPageSantoAntonio()), 
                   );
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Você escolheu Ônibus Santo Antônio')),
