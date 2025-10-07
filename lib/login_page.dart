@@ -14,7 +14,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
   bool _isLoading = false;
 
-  // 🔐 Função para login
+
   Future<void> _login() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
@@ -34,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
         password: password,
     ***REMOVED***
 
-      // Login bem-sucedido → vá para HomePage
+     
       if (mounted) {
         Navigator.pushReplacement(
           context,
@@ -130,7 +130,6 @@ class _LoginPageState extends State<LoginPage> {
           ***REMOVED***
               const SizedBox(height: 30),
 
-              // Botão de login
               MouseRegion(
                 cursor: SystemMouseCursors.click,
                 child: ElevatedButton(

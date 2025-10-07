@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
-import 'who_is_using.dart'; // 👉 importa a nova página
+import 'package:flutter_dotenv/flutter_dotenv.dart'; 
+import 'package:firebase_core/firebase_core.dart';
 
+import 'who_is_using.dart';
 import 'login_page.dart';
 import 'home_page.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp( 
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
+  
+  // Carregar variáveis do .env
+  await dotenv.load(fileName: ".env");
+
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+      apiKey: dotenv.env['API_KEY']!,
+      authDomain: dotenv.env['AUTH_DOMAIN'],
+      projectId: dotenv.env['PROJECT_ID']!,
+      storageBucket: dotenv.env['STORAGE_BUCKET'],
+      messagingSenderId: dotenv.env['MESSAGING_SENDER_ID']!,
+      appId: dotenv.env['APP_ID']!,
+      measurementId: dotenv.env['MEASUREMENT_ID'],),);
+
   runApp(const MobusApp());
 }
 
@@ -57,7 +62,7 @@ class StartPage extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Ícone do app
+
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
@@ -72,7 +77,7 @@ class StartPage extends StatelessWidget {
           ***REMOVED***
               const SizedBox(height: 30),
 
-              // Texto de boas-vindas
+             
               const Text(
                 'Bem-vindo ao Mobus!',
                 style: TextStyle(
@@ -101,12 +106,12 @@ class StartPage extends StatelessWidget {
           ***REMOVED***
               const SizedBox(height: 40),
 
-              // Botão "Começar"
+             
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => WhoIsUsingPage()), // 👉 agora abre a nova tela
+                    MaterialPageRoute(builder: (context) => WhoIsUsingPage()), 
                 ***REMOVED***
                 },
                 style: ElevatedButton.styleFrom(
