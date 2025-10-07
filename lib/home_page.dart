@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
       position,
       duration: Duration(milliseconds: 600),
       curve: Curves.easeInOut,
-  ***REMOVED***
+    );
   }
 
   @override
@@ -25,26 +25,26 @@ class HomePage extends StatelessWidget {
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
-      ***REMOVED***
-    ***REMOVED***
+          ),
+        ),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
-    ***REMOVED***
+        ),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => LoginPage()),
-            ***REMOVED***
+              );
             },
             child: const Text(
               "Login",
               style: TextStyle(color: Colors.white, fontSize: 16),
-        ***REMOVED***
-      ***REMOVED***
+            ),
+          ),
         ],
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(50),
@@ -58,10 +58,10 @@ class HomePage extends StatelessWidget {
                 _buildNavButton("Sobre", () => _scrollTo(800)),
                 _buildNavButton("Contato", () => _scrollTo(1200)),
               ],
-        ***REMOVED***
-      ***REMOVED***
-    ***REMOVED***
-  ***REMOVED***
+            ),
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
         controller: _scrollController,
         child: Column(
@@ -71,26 +71,26 @@ class HomePage extends StatelessWidget {
               "Bem-vindo ao Mobus!",
               "Acompanhe o transporte em tempo real e saiba tudo sobre o seu trajeto.",
               Icons.directions_bus,
-        ***REMOVED***
+            ),
             _buildSection(
               "Funcionalidades",
               "Veja horários, rotas, localização em tempo real e muito mais.",
               Icons.map,
-        ***REMOVED***
+            ),
             _buildSection(
               "Sobre",
               "O Mobus é um aplicativo criado para facilitar a vida dos passageiros.",
               Icons.info,
-        ***REMOVED***
+            ),
             _buildSection(
               "Contato",
               "Entre em contato com nossa equipe de suporte.",
               Icons.contact_mail,
-        ***REMOVED***
+            ),
           ],
-    ***REMOVED***
-  ***REMOVED***
-  ***REMOVED***
+        ),
+      ),
+    );
   }
 
   // Botões do menu superior
@@ -100,8 +100,8 @@ class HomePage extends StatelessWidget {
       child: Text(
         text,
         style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-  ***REMOVED***
-  ***REMOVED***
+      ),
+    );
   }
 
   // Blocos de conteúdo
@@ -119,17 +119,17 @@ class HomePage extends StatelessWidget {
               fontSize: 28,
               fontWeight: FontWeight.bold,
               color: Colors.blue.shade700,
-        ***REMOVED***
+            ),
             textAlign: TextAlign.center,
-      ***REMOVED***
+          ),
           const SizedBox(height: 10),
           Text(
             description,
             style: const TextStyle(fontSize: 18, color: Colors.black87),
             textAlign: TextAlign.center,
-      ***REMOVED***
+          ),
         ],
-  ***REMOVED***
-  ***REMOVED***
+      ),
+    );
   }
 }

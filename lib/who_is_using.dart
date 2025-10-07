@@ -3,6 +3,8 @@ import "bus_choice_page.dart";
 import 'login_page.dart'; 
 
 class WhoIsUsingPage extends StatelessWidget {
+  const WhoIsUsingPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,8 +16,8 @@ class WhoIsUsingPage extends StatelessWidget {
             colors: [Colors.blue.shade700, Colors.blue.shade300],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-      ***REMOVED***
-    ***REMOVED***
+          ),
+        ),
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -25,14 +27,14 @@ class WhoIsUsingPage extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   shape: BoxShape.circle,
-            ***REMOVED***
+                ),
                 padding: EdgeInsets.all(20),
                 child: Icon(
                   Icons.directions_bus,
                   size: 120,
                   color: Colors.white,
-            ***REMOVED***
-          ***REMOVED***
+                ),
+              ),
               SizedBox(height: 30),
 
               Text(
@@ -46,11 +48,11 @@ class WhoIsUsingPage extends StatelessWidget {
                       blurRadius: 4,
                       color: Colors.black26,
                       offset: Offset(2, 2),
-                ***REMOVED***
+                    ),
                   ],
-            ***REMOVED***
+                ),
                 textAlign: TextAlign.center,
-          ***REMOVED***
+              ),
               SizedBox(height: 40),
 
               ElevatedButton(
@@ -58,7 +60,7 @@ class WhoIsUsingPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => BusChoicePage()),
-                ***REMOVED***
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 50, vertical: 18),
@@ -67,13 +69,13 @@ class WhoIsUsingPage extends StatelessWidget {
                   textStyle: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-              ***REMOVED***
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-              ***REMOVED***
-            ***REMOVED***
+                  ),
+                ),
                 child: Text('Sou Aluno'),
-          ***REMOVED***
+              ),
               SizedBox(height: 20),
 
               ElevatedButton(
@@ -81,7 +83,7 @@ class WhoIsUsingPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => LoginPage()),
-                ***REMOVED***
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 50, vertical: 18),
@@ -90,17 +92,17 @@ class WhoIsUsingPage extends StatelessWidget {
                   textStyle: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-              ***REMOVED***
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-              ***REMOVED***
-            ***REMOVED***
+                  ),
+                ),
                 child: Text('Sou Motorista'),
-          ***REMOVED***
+              ),
             ],
-      ***REMOVED***
-    ***REMOVED***
-  ***REMOVED***
-  ***REMOVED***
+          ),
+        ),
+      ),
+    );
   }
 }

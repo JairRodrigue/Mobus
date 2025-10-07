@@ -15,8 +15,8 @@ class BusChoiceDriver extends StatelessWidget {
             colors: [Colors.blue.shade700, Colors.blue.shade300],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-      ***REMOVED***
-    ***REMOVED***
+          ),
+        ),
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -25,14 +25,14 @@ class BusChoiceDriver extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   shape: BoxShape.circle,
-            ***REMOVED***
+                ),
                 padding: const EdgeInsets.all(20),
                 child: const Icon(
                   Icons.directions_bus,
                   size: 120,
                   color: Colors.white,
-            ***REMOVED***
-          ***REMOVED***
+                ),
+              ),
               const SizedBox(height: 30),
 
               const Text(
@@ -46,11 +46,11 @@ class BusChoiceDriver extends StatelessWidget {
                       blurRadius: 4,
                       color: Colors.black26,
                       offset: Offset(2, 2),
-                ***REMOVED***
+                    ),
                   ],
-            ***REMOVED***
+                ),
                 textAlign: TextAlign.center,
-          ***REMOVED***
+              ),
               const SizedBox(height: 40),
 
               ElevatedButton(
@@ -58,10 +58,10 @@ class BusChoiceDriver extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => HomePage()), 
-                ***REMOVED***
+                  );
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Você escolheu Ônibus Cohab')),
-                ***REMOVED***
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 18),
@@ -70,13 +70,13 @@ class BusChoiceDriver extends StatelessWidget {
                   textStyle: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-              ***REMOVED***
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-              ***REMOVED***
-            ***REMOVED***
+                  ),
+                ),
                 child: const Text('Ônibus Cohab'),
-          ***REMOVED***
+              ),
               const SizedBox(height: 20),
 
               ElevatedButton(
@@ -84,10 +84,10 @@ class BusChoiceDriver extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => HomePage()), 
-                ***REMOVED***
+                  );
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Você escolheu Ônibus Santo Antônio')),
-                ***REMOVED***
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 18),
@@ -96,17 +96,17 @@ class BusChoiceDriver extends StatelessWidget {
                   textStyle: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-              ***REMOVED***
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-              ***REMOVED***
-            ***REMOVED***
+                  ),
+                ),
                 child: const Text('Ônibus Santo Antônio'),
-          ***REMOVED***
+              ),
             ],
-      ***REMOVED***
-    ***REMOVED***
-  ***REMOVED***
-  ***REMOVED***
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import "bus_choice_driver.dart";
+import 'dart:async';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,15 +16,24 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
   bool _isLoading = false;
 
-  // 🔐 Função para login
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+
   Future<void> _login() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
+      
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Preencha todos os campos')),
-    ***REMOVED***
+      );
       return;
     }
 
@@ -32,23 +43,30 @@ class _LoginPageState extends State<LoginPage> {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
-    ***REMOVED***
+      );
 
-      // Login bem-sucedido → vá para HomePage
+      
       if (mounted) {
+        
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => HomePage()),
-      ***REMOVED***
+          
+          MaterialPageRoute(builder: (_) => BusChoiceDriver()),
+        );
       }
     } on FirebaseAuthException catch (e) {
       String message = 'Erro ao fazer login.';
-      if (e.code == 'user-not-found') {
-        message = 'Usuário não encontrado.';
+      if (e.code == 'user-not-found' || e.code == 'invalid-email') {
+        message = 'Usuário ou e-mail inválido.';
       } else if (e.code == 'wrong-password') {
         message = 'Senha incorreta.';
+      } else if (e.code == 'too-many-requests') {
+        message = 'Muitas tentativas. Tente novamente mais tarde.';
+      } else {
+        message = 'Erro desconhecido: ${e.message}';
       }
 
+      
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -66,14 +84,13 @@ class _LoginPageState extends State<LoginPage> {
           onPressed: () {
             Navigator.pop(context);
           },
-    ***REMOVED***
+        ),
         title: const Text(
           'Login no Mobus',
           style: TextStyle(color: Colors.white),
-    ***REMOVED***
-        title: const Text('Login no Mobus', style: TextStyle(color: Colors.white)),
-        centerTitle: true,
-  ***REMOVED***
+        ),
+      ),
+      
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -83,6 +100,7 @@ class _LoginPageState extends State<LoginPage> {
               const Icon(Icons.directions_bus, size: 100, color: Colors.white),
               const SizedBox(height: 20),
 
+              
               TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -95,12 +113,13 @@ class _LoginPageState extends State<LoginPage> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
-              ***REMOVED***
+                  ),
                   prefixIcon: const Icon(Icons.email, color: Colors.white),
-            ***REMOVED***
-          ***REMOVED***
+                ),
+              ),
               const SizedBox(height: 20),
 
+              
               TextField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
@@ -113,59 +132,58 @@ class _LoginPageState extends State<LoginPage> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
-              ***REMOVED***
+                  ),
                   prefixIcon: const Icon(Icons.lock, color: Colors.white),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword ? Icons.visibility : Icons.visibility_off,
                       color: Colors.white,
-                ***REMOVED***
+                    ),
                     onPressed: () {
                       setState(() {
                         _obscurePassword = !_obscurePassword;
                       });
                     },
-              ***REMOVED***
-            ***REMOVED***
-          ***REMOVED***
+                  ),
+                ),
+              ),
               const SizedBox(height: 30),
 
-              // Botão de login
+              
               MouseRegion(
                 cursor: SystemMouseCursors.click,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => BusChoiceDriver()), 
-                ***REMOVED***
-                  },
+                  onPressed: _isLoading ? null : _login,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     foregroundColor: Colors.blue.shade700,
                     padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
-                ***REMOVED***
-              ***REMOVED***
+                    ),
+                    elevation: 5,
+                  ),
                   child: _isLoading
-                      ? const SizedBox(
+                      ? SizedBox(
                           height: 20,
                           width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 3,
+                            color: Colors.blue.shade700,
+                          ),
                         )
                       : const Text(
                           'Login',
                           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ***REMOVED***
-            ***REMOVED***
-          ***REMOVED***
+                        ),
+                ),
+              ),
 
               const SizedBox(height: 40),
             ],
-      ***REMOVED***
-    ***REMOVED***
-  ***REMOVED***
-  ***REMOVED***
+          ),
+        ),
+      ),
+    );
   }
 }

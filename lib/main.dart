@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
-import 'who_is_using.dart'; // 👉 importa a nova página
+import 'package:flutter_dotenv/flutter_dotenv.dart'; 
+import 'package:firebase_core/firebase_core.dart';
 
-import 'login_page.dart';
-import 'home_page.dart';
+import 'who_is_using.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp( 
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
+  
+  // Carregar variáveis do .env
+  await dotenv.load(fileName: ".env");
+
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+      apiKey: dotenv.env['API_KEY']!,
+      authDomain: dotenv.env['AUTH_DOMAIN'],
+      projectId: dotenv.env['PROJECT_ID']!,
+      storageBucket: dotenv.env['STORAGE_BUCKET'],
+      messagingSenderId: dotenv.env['MESSAGING_SENDER_ID']!,
+      appId: dotenv.env['APP_ID']!,
+      measurementId: dotenv.env['MEASUREMENT_ID'],),);
+
   runApp(const MobusApp());
 }
 
@@ -31,9 +34,9 @@ class MobusApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.white,
-  ***REMOVED***
+      ),
       home: StartPage(),
-  ***REMOVED***
+    );
   }
 }
 
@@ -51,28 +54,28 @@ class StartPage extends StatelessWidget {
             colors: [Colors.blue.shade700, Colors.blue.shade300],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-      ***REMOVED***
-    ***REMOVED***
+          ),
+        ),
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Ícone do app
+
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   shape: BoxShape.circle,
-            ***REMOVED***
+                ),
                 padding: const EdgeInsets.all(20),
                 child: const Icon(
                   Icons.directions_bus,
                   size: 120,
                   color: Colors.white,
-            ***REMOVED***
-          ***REMOVED***
+                ),
+              ),
               const SizedBox(height: 30),
 
-              // Texto de boas-vindas
+             
               const Text(
                 'Bem-vindo ao Mobus!',
                 style: TextStyle(
@@ -84,11 +87,11 @@ class StartPage extends StatelessWidget {
                       blurRadius: 4,
                       color: Colors.black26,
                       offset: Offset(2, 2),
-                ***REMOVED***
+                    ),
                   ],
-            ***REMOVED***
+                ),
                 textAlign: TextAlign.center,
-          ***REMOVED***
+              ),
               const SizedBox(height: 10),
 
               const Text(
@@ -96,18 +99,18 @@ class StartPage extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 18,
                   color: Colors.white70,
-            ***REMOVED***
+                ),
                 textAlign: TextAlign.center,
-          ***REMOVED***
+              ),
               const SizedBox(height: 40),
 
-              // Botão "Começar"
+             
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => WhoIsUsingPage()), // 👉 agora abre a nova tela
-                ***REMOVED***
+                    MaterialPageRoute(builder: (context) => WhoIsUsingPage()), 
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 18),
@@ -116,17 +119,17 @@ class StartPage extends StatelessWidget {
                   textStyle: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-              ***REMOVED***
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-              ***REMOVED***
-            ***REMOVED***
+                  ),
+                ),
                 child: const Text('Começar'),
-          ***REMOVED***
+              ),
             ],
-      ***REMOVED***
-    ***REMOVED***
-  ***REMOVED***
-  ***REMOVED***
+          ),
+        ),
+      ),
+    );
   }
 }
