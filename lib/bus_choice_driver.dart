@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'home_page.dart';
+import 'location_driver_cohab.dart'; 
+import 'location_driver_santo_antonio.dart'; 
 
 class BusChoiceDriver extends StatelessWidget {
   const BusChoiceDriver({super.key});
@@ -57,10 +58,10 @@ class BusChoiceDriver extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => HomePage()), 
+                    MaterialPageRoute(builder: (context) => LocationDriverCohab()), 
                   );
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Você escolheu Ônibus Cohab')),
+                    const SnackBar(content: Text('Você escolheu Ônibus Cohab (Compartilhar Localização)')),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -80,13 +81,13 @@ class BusChoiceDriver extends StatelessWidget {
               const SizedBox(height: 20),
 
               ElevatedButton(
-                onPressed: () {
+                onPressed: () {                 
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => HomePage()), 
+                    MaterialPageRoute(builder: (context) => LocationDriverSantoAntonio()), 
                   );
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Você escolheu Ônibus Santo Antônio')),
+                    const SnackBar(content: Text('Você escolheu Ônibus Santo Antônio (Compartilhar Localização)')),
                   );
                 },
                 style: ElevatedButton.styleFrom(
