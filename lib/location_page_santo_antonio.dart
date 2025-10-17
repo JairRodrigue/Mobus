@@ -22,7 +22,6 @@ class LocationPageSantoAntonio extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-
         ],
       ),
       body: Center(
