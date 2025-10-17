@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart'; 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'who_is_using.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Carregar variáveis do .env
   await dotenv.load(fileName: ".env");
 
@@ -18,7 +18,9 @@ Future<void> main() async {
       storageBucket: dotenv.env['STORAGE_BUCKET'],
       messagingSenderId: dotenv.env['MESSAGING_SENDER_ID']!,
       appId: dotenv.env['APP_ID']!,
-      measurementId: dotenv.env['MEASUREMENT_ID'],),);
+      measurementId: dotenv.env['MEASUREMENT_ID'],
+    ),
+  );
 
   runApp(const MobusApp());
 }
@@ -60,7 +62,6 @@ class StartPage extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
@@ -75,7 +76,6 @@ class StartPage extends StatelessWidget {
               ),
               const SizedBox(height: 30),
 
-             
               const Text(
                 'Bem-vindo ao Mobus!',
                 style: TextStyle(
@@ -96,24 +96,23 @@ class StartPage extends StatelessWidget {
 
               const Text(
                 'Acompanhe o transporte em tempo real',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white70,
-                ),
+                style: TextStyle(fontSize: 18, color: Colors.white70),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),
 
-             
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => WhoIsUsingPage()), 
+                    MaterialPageRoute(builder: (context) => WhoIsUsingPage()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 18),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 50,
+                    vertical: 18,
+                  ),
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.blue.shade700,
                   textStyle: const TextStyle(
