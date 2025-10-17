@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'login_page.dart'; // Import da página de login
 
 class HomePage extends StatelessWidget {
   final ScrollController _scrollController = ScrollController();
@@ -10,7 +9,7 @@ class HomePage extends StatelessWidget {
   void _scrollTo(double position) {
     _scrollController.animateTo(
       position,
-      duration: Duration(milliseconds: 600),
+      duration: const Duration(milliseconds: 600),
       curve: Curves.easeInOut,
     );
   }
@@ -32,22 +31,9 @@ class HomePage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => LoginPage()),
-              );
-            },
-            child: const Text(
-              "Login",
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ),
-          ),
-        ],
+        actions: [],
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(50),
+          preferredSize: const Size.fromHeight(50),
           child: Container(
             color: Colors.blue.shade700,
             child: Row(
