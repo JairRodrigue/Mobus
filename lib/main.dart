@@ -132,10 +132,7 @@ class StartPage extends StatelessWidget {
               const SizedBox(height: 10),
               const Text(
                 'Acompanhe o transporte em tempo real',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white70,
-                ),
+                style: TextStyle(fontSize: 18, color: Colors.white70),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),

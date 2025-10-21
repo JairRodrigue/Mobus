@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class LocationDriverSantoAntonio extends StatefulWidget {
   const LocationDriverSantoAntonio({super.key});
@@ -45,6 +46,27 @@ class _LocationDriverSantoAntonioState
         _currentPosition = newPos;
       });
 
+      Geolocator.getPositionStream(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.best,
+          distanceFilter: 5,
+        ),
+      ).listen((Position pos) {
+        LatLng newPos = LatLng(pos.latitude, pos.longitude);
+        setState(() {
+          _currentPosition = newPos;
+        });
+
+        // envia para Firebase
+        FirebaseDatabase.instance.ref('onibus/santo_antonio').set({
+          'lat': pos.latitude,
+          'lng': pos.longitude,
+          'timestamp': DateTime.now().toIso8601String(),
+        });
+
+        _mapController.move(newPos, 17);
+      });
+
       // move a câmera para nova posição
       _mapController.move(newPos, 17);
     });
@@ -57,10 +79,7 @@ class _LocationDriverSantoAntonioState
         backgroundColor: Colors.blue.shade700,
         title: const Text(
           "Compartilhar: Ônibus Santo Antônio",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         leading: IconButton(
@@ -88,8 +107,11 @@ class _LocationDriverSantoAntonioState
                         point: _currentPosition,
                         width: 80,
                         height: 80,
-                        child: const Icon(Icons.location_on,
-                            color: Colors.red, size: 40),
+                        child: const Icon(
+                          Icons.location_on,
+                          color: Colors.red,
+                          size: 40,
+                        ),
                       ),
                     ],
                   ),
@@ -129,11 +151,15 @@ class _LocationDriverSantoAntonioState
                       label: const Text(
                         'Compartilhar Localização',
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 15),
+                          horizontal: 30,
+                          vertical: 15,
+                        ),
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
