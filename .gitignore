@@ -6,7 +6,7 @@
 *.swp
 .buildlog/
 .history
-.env
+mobus.env
 
 # Flutter repo-specific
 /bin/cache/
@@ -71,3 +71,6 @@ app.*.symbols
 !/dev/ci/**/Gemfile.lock
 
 **/android/app/google-services.json
+
+
+.firebase/hosting.*.cache

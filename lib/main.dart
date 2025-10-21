@@ -1,24 +1,62 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'who_is_using.dart';
 
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  const apiKeyFromEnv = String.fromEnvironment('API_KEY');
+  final apiKey = apiKeyFromEnv.isEmpty ? null : apiKeyFromEnv;
 
-  // Carregar variáveis do .env
-  await dotenv.load(fileName: ".env");
+  const authDomainFromEnv = String.fromEnvironment('AUTH_DOMAIN');
+  final authDomain = authDomainFromEnv.isEmpty ? null : authDomainFromEnv;
+
+  const projectIdFromEnv = String.fromEnvironment('PROJECT_ID');
+  final projectId = projectIdFromEnv.isEmpty ? null : projectIdFromEnv;
+
+  const storageBucketFromEnv = String.fromEnvironment('STORAGE_BUCKET');
+  final storageBucket = storageBucketFromEnv.isEmpty ? null : storageBucketFromEnv;
+
+  const messagingSenderIdFromEnv = String.fromEnvironment('MESSAGING_SENDER_ID');
+  final messagingSenderId = messagingSenderIdFromEnv.isEmpty ? null : messagingSenderIdFromEnv;
+
+  const appIdFromEnv = String.fromEnvironment('APP_ID');
+  final appId = appIdFromEnv.isEmpty ? null : appIdFromEnv;
+
+  const measurementIdFromEnv = String.fromEnvironment('MEASUREMENT_ID');
+  final measurementId = measurementIdFromEnv.isEmpty ? null : measurementIdFromEnv;
+
+  if (apiKey == null || projectId == null || appId == null || messagingSenderId == null) {
+    runApp(const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Center(
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text(
+              "Erro de Configuração: As chaves do Firebase (API_KEY, PROJECT_ID, APP_ID, MESSAGING_SENDER_ID) não foram encontradas. Verifique se o arquivo .env está correto e se o build foi executado com a flag '--dart-define-from-file'.",
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ),
+    ));
+
+    return;
+  }
+
 
   await Firebase.initializeApp(
     options: FirebaseOptions(
-      apiKey: dotenv.env['API_KEY']!,
-      authDomain: dotenv.env['AUTH_DOMAIN'],
-      projectId: dotenv.env['PROJECT_ID']!,
-      storageBucket: dotenv.env['STORAGE_BUCKET'],
-      messagingSenderId: dotenv.env['MESSAGING_SENDER_ID']!,
-      appId: dotenv.env['APP_ID']!,
-      measurementId: dotenv.env['MEASUREMENT_ID'],
+      apiKey: apiKey,
+      appId: appId,
+      authDomain: authDomain,
+      projectId: projectId,
+      storageBucket: storageBucket,
+      messagingSenderId: messagingSenderId,
+      measurementId: measurementId,
     ),
   );
 
@@ -37,7 +75,7 @@ class MobusApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: StartPage(),
+      home: const StartPage(),
     );
   }
 }
@@ -75,7 +113,6 @@ class StartPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 30),
-
               const Text(
                 'Bem-vindo ao Mobus!',
                 style: TextStyle(
@@ -93,26 +130,22 @@ class StartPage extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 10),
-
               const Text(
                 'Acompanhe o transporte em tempo real',
                 style: TextStyle(fontSize: 18, color: Colors.white70),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),
-
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => WhoIsUsingPage()),
+                    MaterialPageRoute(builder: (context) => const WhoIsUsingPage()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 50,
-                    vertical: 18,
-                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 50, vertical: 18),
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.blue.shade700,
                   textStyle: const TextStyle(
@@ -132,3 +165,4 @@ class StartPage extends StatelessWidget {
     );
   }
 }
+
