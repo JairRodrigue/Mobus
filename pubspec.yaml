@@ -67,7 +67,7 @@ flutter:
 
   # Adição da seção assets para que o Flutter inclua o arquivo .env
   assets:
-    - .env
+
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
