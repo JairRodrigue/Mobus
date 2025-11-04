@@ -1,7 +1,170 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:geolocator/geolocator.dart';
 
-class LocationPageCohab extends StatelessWidget {
+class BusStopData {
+  final String id;
+  final LatLng position;
+  final String name;
+  bool passed;
+
+  BusStopData({
+    required this.id,
+    required this.position,
+    required this.name,
+    this.passed = false,
+  });
+}
+
+class LocationPageCohab extends StatefulWidget {
   const LocationPageCohab({super.key});
+
+  @override
+  State<LocationPageCohab> createState() => _LocationPageCohabState();
+}
+
+class _LocationPageCohabState extends State<LocationPageCohab> {
+  final MapController _mapController = MapController();
+
+  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref(
+    'onibus/cohab',
+  );
+  Stream<DatabaseEvent>? _busStream;
+
+  final List<BusStopData> _fixedBusStops = [
+    BusStopData(
+      id: 'p1',
+      name: 'Entrada da BR',
+      position: LatLng(-8.348653123556376, -36.409243068163),
+    ),
+    BusStopData(
+      id: 'p2',
+      name: 'Praça das crianças',
+      position: LatLng(-8.343889377713843, -36.413837818197614),
+    ),
+    BusStopData(
+      id: 'p3',
+      name: 'Sebastião Cabral',
+      position: LatLng(-8.34210767354571, -36.41681422352121),
+    ),
+    BusStopData(
+      id: 'p4',
+      name: 'Fórum',
+      position: LatLng(-8.33711239401202, -36.41898671794646),
+    ),
+    BusStopData(
+      id: 'p5',
+      name: 'Colegial',
+      position: LatLng(-8.33377120753406, -36.41841024066295),
+    ),
+    BusStopData(
+      id: 'p6',
+      name: 'Santa Fé',
+      position: LatLng(-8.331888692413065, -36.41357140284076),
+    ),
+    BusStopData(
+      id: 'p7',
+      name: 'UABJ',
+      position: LatLng(-8.326865277108523, -36.40530664721273),
+    ),
+    BusStopData(
+      id: 'p8',
+      name: 'AEB',
+      position: LatLng(-8.320094221176046, -36.39561876255546),
+    ),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _busStream = _dbRef.onValue;
+  }
+
+  List<Marker> _buildMarkers(Map? fullData) {
+    final List<Marker> markers = [];
+
+    final busData = fullData?['localizacao_atual'] as Map?;
+    LatLng? busPosition;
+
+    if (busData != null && busData.containsKey('lat')) {
+      busPosition = LatLng(
+        (busData['lat'] as num).toDouble(),
+        (busData['lng'] as num).toDouble(),
+      );
+
+      markers.add(
+        Marker(
+          point: busPosition,
+          width: 80,
+          height: 80,
+          child: const Icon(
+            Icons.directions_bus,
+            color: Colors.blueAccent,
+            size: 40,
+          ),
+        ),
+      );
+    }
+
+    final pointsPassed =
+        fullData?['pontos_passados'] as Map<dynamic, dynamic>? ?? {};
+    final Set<String> passedIds = pointsPassed.keys.cast<String>().toSet();
+
+    for (var stop in _fixedBusStops) {
+      final isPassed = passedIds.contains(stop.id);
+      final color = isPassed ? Colors.grey : Colors.red;
+
+      markers.add(
+        Marker(
+          point: stop.position,
+          width: 40,
+          height: 40,
+          child: Tooltip(
+            message: stop.name,
+            child: Icon(
+              Icons.directions_bus_filled_outlined,
+              color: color,
+              size: 30,
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (busPosition != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _mapController.move(busPosition!, 16);
+      });
+    }
+
+    return markers;
+  }
+
+  List<Polyline> _buildPolylines(Map? fullData) {
+    final rotaData = fullData?['rota'] as Map?;
+    if (rotaData == null || rotaData.isEmpty) {
+      return const [];
+    }
+
+    final List<LatLng> rotaPontos = rotaData.values
+        .whereType<Map>()
+        .map(
+          (ponto) => LatLng(
+            (ponto['lat'] as num).toDouble(),
+            (ponto['lng'] as num).toDouble(),
+          ),
+        )
+        .toList();
+
+    if (rotaPontos.isEmpty) return const [];
+
+    return [
+      Polyline(points: rotaPontos, strokeWidth: 5.0, color: Colors.blueAccent),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -9,50 +172,46 @@ class LocationPageCohab extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.blue.shade700,
         title: const Text(
-          "Localização de Ônibus",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          "Ônibus Cohab em Tempo Real",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        actions: [],
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
+      body: StreamBuilder<DatabaseEvent>(
+        stream: _busStream,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final fullData = snapshot.data?.snapshot.value as Map?;
+
+          if (fullData == null || fullData['localizacao_atual'] == null) {
+            return const Center(
+              child: Text("Ônibus Cohab inativo ou sem localização."),
+            );
+          }
+
+          return FlutterMap(
+            mapController: _mapController,
+            options: const MapOptions(
+              initialCenter: LatLng(-8.343481, -36.420045),
+              initialZoom: 16,
+              interactionOptions: InteractionOptions(
+                flags: InteractiveFlag.all,
+              ),
+            ),
             children: [
-              Icon(
-                Icons.map_outlined,
-                size: 100,
-                color: Colors.blue.shade700,
+              TileLayer(
+                urlTemplate:
+                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                userAgentPackageName: 'com.example.mobus',
               ),
-              const SizedBox(height: 30),
-              Text(
-                "Localização disponível em breve",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue.shade700,
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                "A localização estará disponível nesta tela, aguarde as próximas atualizações.",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.black54),
-              ),
+              PolylineLayer(polylines: _buildPolylines(fullData)),
+              MarkerLayer(markers: _buildMarkers(fullData)),
             ],
-          ),
-        ),
+          );
+        },
       ),
     );
   }

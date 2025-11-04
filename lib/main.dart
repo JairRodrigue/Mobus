@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
-
-import 'who_is_using.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:mobus/bus_choice_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Carregar variáveis do .env
   await dotenv.load(fileName: ".env");
+
+  print('🔍 API KEY: ${dotenv.env['FIREBASE_API_KEY']}');
 
   await Firebase.initializeApp(
     options: FirebaseOptions(
-      apiKey: dotenv.env['API_KEY']!,
-      authDomain: dotenv.env['AUTH_DOMAIN'],
-      projectId: dotenv.env['PROJECT_ID']!,
-      storageBucket: dotenv.env['STORAGE_BUCKET'],
-      messagingSenderId: dotenv.env['MESSAGING_SENDER_ID']!,
-      appId: dotenv.env['APP_ID']!,
-      measurementId: dotenv.env['MEASUREMENT_ID'],
+      apiKey: dotenv.env['FIREBASE_API_KEY'] ?? '',
+      authDomain: dotenv.env['FIREBASE_AUTH_DOMAIN'] ?? '',
+      databaseURL: dotenv.env['FIREBASE_DATABASE_URL'] ?? '',
+      projectId: dotenv.env['FIREBASE_PROJECT_ID'] ?? '',
+      storageBucket: dotenv.env['FIREBASE_STORAGE_BUCKET'] ?? '',
+      messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID'] ?? '',
+      appId: dotenv.env['FIREBASE_APP_ID'] ?? '',
+      measurementId: dotenv.env['FIREBASE_MEASUREMENT_ID'] ?? '',
     ),
   );
 
@@ -37,7 +39,7 @@ class MobusApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: StartPage(),
+      home: const StartPage(),
     );
   }
 }
@@ -75,7 +77,6 @@ class StartPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 30),
-
               const Text(
                 'Bem-vindo ao Mobus!',
                 style: TextStyle(
@@ -93,19 +94,19 @@ class StartPage extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 10),
-
               const Text(
                 'Acompanhe o transporte em tempo real',
                 style: TextStyle(fontSize: 18, color: Colors.white70),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),
-
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => WhoIsUsingPage()),
+                    MaterialPageRoute(
+                      builder: (context) => const BusChoicePage(),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
