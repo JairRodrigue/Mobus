@@ -6,7 +6,12 @@
 *.swp
 .buildlog/
 .history
-.env
+mobus.env
+*.env
+**/.firebaserc
+**/build
+**/node_modules
+*.cache
 
 # Flutter repo-specific
 /bin/cache/

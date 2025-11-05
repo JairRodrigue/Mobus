@@ -7,22 +7,51 @@ import 'package:mobus/bus_choice_page.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await dotenv.load(fileName: ".env");
+  const String firebaseApiKey = String.fromEnvironment('API_KEY', defaultValue: '');
+  const String firebaseAuthDomain = String.fromEnvironment('AUTH_DOMAIN', defaultValue: '');
+  const String firebaseDatabaseUrl = String.fromEnvironment('DATABASE_URL', defaultValue: '');
+  const String firebaseProjectId = String.fromEnvironment('PROJECT_ID', defaultValue: '');
+  const String firebaseStorageBucket = String.fromEnvironment('STORAGE_BUCKET', defaultValue: '');
+  const String firebaseMessagingSenderId = String.fromEnvironment('MESSAGING_SENDER_ID', defaultValue: '');
+  const String firebaseAppId = String.fromEnvironment('APP_ID', defaultValue: '');
+  const String firebaseMeasurementId = String.fromEnvironment('MEASUREMENT_ID', defaultValue: '');
 
-  print('🔍 API KEY: ${dotenv.env['FIREBASE_API_KEY']}');
+  if (!kIsWeb) {
+    await dotenv.load(fileName: "mobus.env"); 
+  }
 
-  await Firebase.initializeApp(
-    options: FirebaseOptions(
-      apiKey: dotenv.env['FIREBASE_API_KEY'] ?? '',
-      authDomain: dotenv.env['FIREBASE_AUTH_DOMAIN'] ?? '',
-      databaseURL: dotenv.env['FIREBASE_DATABASE_URL'] ?? '',
-      projectId: dotenv.env['FIREBASE_PROJECT_ID'] ?? '',
-      storageBucket: dotenv.env['FIREBASE_STORAGE_BUCKET'] ?? '',
-      messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID'] ?? '',
-      appId: dotenv.env['FIREBASE_APP_ID'] ?? '',
-      measurementId: dotenv.env['FIREBASE_MEASUREMENT_ID'] ?? '',
-    ),
-  );
+  FirebaseOptions options;
+
+  if (kIsWeb) {
+      options = FirebaseOptions(
+          apiKey: firebaseApiKey,
+          authDomain: firebaseAuthDomain,
+          databaseURL: firebaseDatabaseUrl,
+          projectId: firebaseProjectId,
+          storageBucket: firebaseStorageBucket,
+          messagingSenderId: firebaseMessagingSenderId,
+          appId: firebaseAppId,
+          measurementId: firebaseMeasurementId,
+      );
+  } else {
+      options = FirebaseOptions(
+          apiKey: dotenv.env['API_KEY'] ?? '',
+          authDomain: dotenv.env['AUTH_DOMAIN'] ?? '',
+          databaseURL: dotenv.env['DATABASE_URL'] ?? '',
+          projectId: dotenv.env['PROJECT_ID'] ?? '',
+          storageBucket: dotenv.env['STORAGE_BUCKET'] ?? '',
+          messagingSenderId: dotenv.env['MESSAGING_SENDER_ID'] ?? '',
+          appId: dotenv.env['APP_ID'] ?? '',
+          measurementId: dotenv.env['MEASUREMENT_ID'] ?? '',
+      );
+  }
+
+  if (options.apiKey.isEmpty) {
+      throw Exception("ERRO CRÍTICO: A chave API_KEY do Firebase está vazia. Verifique seu mobus.env e o comando de build.");
+  }
+
+
+  await Firebase.initializeApp(options: options);
 
   runApp(const MobusApp());
 }
