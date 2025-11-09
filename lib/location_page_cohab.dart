@@ -28,11 +28,16 @@ class LocationPageCohab extends StatefulWidget {
 
 class _LocationPageCohabState extends State<LocationPageCohab> {
   final MapController _mapController = MapController();
-
-  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref(
+  final DatabaseReference _onibusRef = FirebaseDatabase.instance.ref(
     'onibus/cohab',
   );
+
   Stream<DatabaseEvent>? _busStream;
+
+  bool _popupAberto = false;
+  bool _rotaAnteriorFinalizada = false;
+  bool _compartilhandoAnterior = false;
+  bool _primeiraLeitura = true;
 
   final List<BusStopData> _fixedBusStops = [
     BusStopData(
@@ -80,7 +85,7 @@ class _LocationPageCohabState extends State<LocationPageCohab> {
   @override
   void initState() {
     super.initState();
-    _busStream = _dbRef.onValue;
+    _busStream = _onibusRef.onValue;
   }
 
   List<Marker> _buildMarkers(Map? fullData) {
@@ -124,11 +129,7 @@ class _LocationPageCohabState extends State<LocationPageCohab> {
           height: 40,
           child: Tooltip(
             message: stop.name,
-            child: Icon(
-              Icons.directions_bus_filled_outlined,
-              color: color,
-              size: 30,
-            ),
+            child: Icon(Icons.location_on, color: color, size: 30),
           ),
         ),
       );
@@ -166,6 +167,100 @@ class _LocationPageCohabState extends State<LocationPageCohab> {
     ];
   }
 
+  void _mostrarPopupAvaliacao(BuildContext context) {
+    if (_popupAberto) return;
+    _popupAberto = true;
+
+    double _avaliacao = 0;
+    TextEditingController _comentarioController = TextEditingController();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: const Text(
+                "Avalie a rota",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(5, (index) {
+                      return IconButton(
+                        icon: Icon(
+                          index < _avaliacao ? Icons.star : Icons.star_border,
+                          color: Colors.amber,
+                          size: 32,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _avaliacao = (index + 1).toDouble();
+                          });
+                        },
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _comentarioController,
+                    decoration: const InputDecoration(
+                      labelText: "Comentário (opcional)",
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 2,
+                  ),
+                ],
+              ),
+              actionsAlignment: MainAxisAlignment.spaceBetween,
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("❌ Não avaliar"),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final comentario = _comentarioController.text.trim();
+                    final ref = FirebaseDatabase.instance.ref(
+                      'avaliacoes/cohab',
+                    );
+
+                    await ref.push().set({
+                      'avaliacao': _avaliacao,
+                      'comentario': comentario,
+                      'data': DateTime.now().toIso8601String(),
+                    });
+
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Avaliação enviada com sucesso!"),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  },
+                  child: const Text("Enviar"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    ).then((_) {
+      _popupAberto = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -185,21 +280,39 @@ class _LocationPageCohabState extends State<LocationPageCohab> {
           }
 
           final fullData = snapshot.data?.snapshot.value as Map?;
-
           if (fullData == null || fullData['localizacao_atual'] == null) {
             return const Center(
               child: Text("Ônibus Cohab inativo ou sem localização."),
             );
           }
 
+          final status = fullData['status'] as Map?;
+          final compartilhando = status?['compartilhando'] == true;
+          final rotaFinalizada = status?['finalizada'] == true;
+
+          if (_primeiraLeitura) {
+            _compartilhandoAnterior = compartilhando;
+            _rotaAnteriorFinalizada = rotaFinalizada;
+            _primeiraLeitura = false;
+          } else {
+            final finalizouAgora =
+                !_rotaAnteriorFinalizada && rotaFinalizada == true;
+
+            if (finalizouAgora && !_popupAberto) {
+              Future.microtask(() {
+                _mostrarPopupAvaliacao(context);
+              });
+            }
+
+            _compartilhandoAnterior = compartilhando;
+            _rotaAnteriorFinalizada = rotaFinalizada;
+          }
+
           return FlutterMap(
             mapController: _mapController,
             options: const MapOptions(
               initialCenter: LatLng(-8.343481, -36.420045),
-              initialZoom: 16,
-              interactionOptions: InteractionOptions(
-                flags: InteractiveFlag.all,
-              ),
+              initialZoom: 15,
             ),
             children: [
               TileLayer(

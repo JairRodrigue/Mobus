@@ -8,6 +8,7 @@
 .history
 mobus.env
 *.env
+*mobus.env
 **/.firebaserc
 **/build
 **/node_modules
