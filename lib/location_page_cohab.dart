@@ -38,6 +38,10 @@ class _LocationPageCohabState extends State<LocationPageCohab> {
   bool _rotaAnteriorFinalizada = false;
   bool _compartilhandoAnterior = false;
   bool _primeiraLeitura = true;
+  
+  bool _showFinishedRouteNotification = true;
+  Timer? _notificationTimer;
+
 
   final List<BusStopData> _fixedBusStops = [
     BusStopData(
@@ -81,11 +85,21 @@ class _LocationPageCohabState extends State<LocationPageCohab> {
       position: LatLng(-8.320094221176046, -36.39561876255546),
     ),
   ];
+  
+  late final Map<String, String> _stopNames;
 
   @override
   void initState() {
     super.initState();
     _busStream = _onibusRef.onValue;
+    _stopNames = Map.fromIterable(
+        _fixedBusStops, key: (stop) => stop.id, value: (stop) => stop.name);
+  }
+  
+  @override
+  void dispose() {
+    _notificationTimer?.cancel();
+    super.dispose();
   }
 
   List<Marker> _buildMarkers(Map? fullData) {
@@ -129,7 +143,7 @@ class _LocationPageCohabState extends State<LocationPageCohab> {
           height: 40,
           child: Tooltip(
             message: stop.name,
-            child: Icon(Icons.location_on, color: color, size: 30),
+            child: Icon(Icons.directions_bus_filled_outlined, color: color, size: 30),
           ),
         ),
       );
@@ -165,6 +179,114 @@ class _LocationPageCohabState extends State<LocationPageCohab> {
     return [
       Polyline(points: rotaPontos, strokeWidth: 5.0, color: Colors.blueAccent),
     ];
+  }
+  
+  Widget _buildNotificationPanel(Map? fullData) {
+    final estimativas = fullData?['estimativas'] as Map?;
+    final rotaFinalizada = fullData?['status']?['finalizada'] == true;
+
+    if (rotaFinalizada && !_showFinishedRouteNotification) {
+      return Container();
+    }
+
+    if (estimativas == null) {
+       return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        color: Colors.grey.shade400,
+        child: const Text(
+          "Aguardando dados de estimativa...",
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.black, fontSize: 16),
+        ),
+      );
+    }
+
+    final double tempoMin = (estimativas['tempo_proxima_min'] as num?)?.toDouble() ?? 0.0;
+    final String proximaParadaId = estimativas['proxima_parada_id'] as String? ?? '';
+    final double distanciaM = (estimativas['distancia_proxima_m'] as num?)?.toDouble() ?? 0.0;
+    final double tempoTotalMin = (estimativas['tempo_total_min'] as num?)?.toDouble() ?? 0.0;
+    
+    final String nomeParada = _stopNames[proximaParadaId] ?? 'Nenhuma Parada';
+    final int tempoRestante = tempoMin.round();
+    final int tempoTotalRestante = tempoTotalMin.round();
+
+    String message;
+    Color color;
+
+    if (rotaFinalizada) {
+        message = "A rota foi finalizada. Tempo total de rota: **$tempoTotalRestante min**.";
+        color = Colors.grey.shade600;
+        
+        if (_showFinishedRouteNotification) {
+          _notificationTimer?.cancel(); 
+          _notificationTimer = Timer(const Duration(seconds: 5), () {
+            if (mounted) {
+              setState(() {
+                _showFinishedRouteNotification = false;
+              });
+            }
+          });
+        }
+    } 
+    else {
+      if (!_showFinishedRouteNotification) {
+         WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              setState(() {
+                _showFinishedRouteNotification = true;
+              });
+            }
+          });
+      }
+      
+      _notificationTimer?.cancel(); 
+
+      if (tempoMin < 1.5 && distanciaM < 150) { 
+          message = "Estamos no ponto: **$nomeParada**! (Total restante: $tempoTotalRestante min)";
+          color = Colors.green.shade700;
+          
+      } 
+      else if (tempoRestante >= 1 && tempoRestante <= 5) {
+          message = "Faltam **$tempoRestante min** para chegar em **$nomeParada**! (Total: $tempoTotalRestante min)";
+          color = Colors.deepOrange.shade700;
+          
+      } 
+      else {
+          message = "O ônibus está a **$tempoRestante min** de **$nomeParada**. (Total: $tempoTotalRestante min)";
+          color = Colors.blue.shade700;
+      }
+    }
+
+    final parts = message.split('**');
+    final formattedText = <TextSpan>[];
+    for (int i = 0; i < parts.length; i++) {
+        formattedText.add(
+          TextSpan(
+            text: parts[i],
+            style: TextStyle(
+              fontWeight: i % 2 != 0 ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        );
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      color: color,
+      child: Text.rich(
+        TextSpan(
+          children: formattedText,
+        ),
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.normal,
+        ),
+      ),
+    );
   }
 
   void _mostrarPopupAvaliacao(BuildContext context) {
@@ -271,25 +393,62 @@ class _LocationPageCohabState extends State<LocationPageCohab> {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: StreamBuilder<DatabaseEvent>(
         stream: _busStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: LinearProgressIndicator());
           }
 
           final fullData = snapshot.data?.snapshot.value as Map?;
-          if (fullData == null || fullData['localizacao_atual'] == null) {
-            return const Center(
-              child: Text("Ônibus Cohab inativo ou sem localização."),
+          
+          Widget notification = _buildNotificationPanel(fullData);
+
+          final bool locationIsMissing = fullData == null || fullData['localizacao_atual'] == null;
+          final bool rotaFinalizada = fullData?['status']?['finalizada'] == true;
+          
+          if (locationIsMissing || (rotaFinalizada && !_showFinishedRouteNotification)) {
+            
+            final status = fullData?['status'] as Map?;
+            final compartilhando = status?['compartilhando'] == true;
+            
+            if (_primeiraLeitura) {
+              _compartilhandoAnterior = compartilhando;
+              _rotaAnteriorFinalizada = rotaFinalizada;
+              _primeiraLeitura = false;
+            } else {
+              final finalizouAgora =
+                  !_rotaAnteriorFinalizada && rotaFinalizada == true;
+
+              if (finalizouAgora && !_popupAberto) {
+                Future.microtask(() {
+                  _mostrarPopupAvaliacao(context);
+                });
+              }
+              _compartilhandoAnterior = compartilhando;
+              _rotaAnteriorFinalizada = rotaFinalizada;
+            }
+
+            return Column(
+              children: [
+                notification,
+                const Expanded(
+                  child: Center(
+                    child: Text("Ônibus Cohab inativo ou sem localização."),
+                  ),
+                ),
+              ],
             );
           }
 
           final status = fullData['status'] as Map?;
           final compartilhando = status?['compartilhando'] == true;
-          final rotaFinalizada = status?['finalizada'] == true;
-
+          
           if (_primeiraLeitura) {
             _compartilhandoAnterior = compartilhando;
             _rotaAnteriorFinalizada = rotaFinalizada;
@@ -303,25 +462,31 @@ class _LocationPageCohabState extends State<LocationPageCohab> {
                 _mostrarPopupAvaliacao(context);
               });
             }
-
             _compartilhandoAnterior = compartilhando;
             _rotaAnteriorFinalizada = rotaFinalizada;
           }
 
-          return FlutterMap(
-            mapController: _mapController,
-            options: const MapOptions(
-              initialCenter: LatLng(-8.343481, -36.420045),
-              initialZoom: 15,
-            ),
+          return Column(
             children: [
-              TileLayer(
-                urlTemplate:
-                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                userAgentPackageName: 'com.example.mobus',
+              notification,
+              Expanded(
+                child: FlutterMap(
+                  mapController: _mapController,
+                  options: const MapOptions(
+                    initialCenter: LatLng(-8.343481, -36.420045),
+                    initialZoom: 15,
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                          "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                      userAgentPackageName: 'com.example.mobus',
+                    ),
+                    PolylineLayer(polylines: _buildPolylines(fullData)),
+                    MarkerLayer(markers: _buildMarkers(fullData)),
+                  ],
+                ),
               ),
-              PolylineLayer(polylines: _buildPolylines(fullData)),
-              MarkerLayer(markers: _buildMarkers(fullData)),
             ],
           );
         },
